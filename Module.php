@@ -31,7 +31,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init()
 	{
-		$this->subscribeEvent('Files::download-file-entry::before', array($this, 'onBeforeDownloadFileEntry'));
+		$this->subscribeEvent('Files::download-file-entry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('Core::file-cache-entry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('Mail::mail-attachment-entry::before', array($this, 'onBeforeFileViewEntry'));
 	}
 	
 	/**
@@ -48,14 +50,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @param type $aArguments
 	 * @param type $aResult
 	 */
-	public function onBeforeDownloadFileEntry(&$aArguments, &$aResult)
+	public function onBeforeFileViewEntry(&$aArguments, &$aResult)
 	{
+		$sEntry = (string) \Aurora\System\Application::GetPathItemByIndex(0, '');
 		$sHash = (string) \Aurora\System\Application::GetPathItemByIndex(1, '');
 		$sAction = (string) \Aurora\System\Application::GetPathItemByIndex(2, '');
 
 		$aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
 		
 		$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
+		if (empty($sFileName))
+		{
+			$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
+		}
 
 		if ($this->isOfficeDocument($sFileName) && $sAction === 'view' && !isset($aValues['AuthToken']))
 		{
@@ -69,7 +76,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 			
-			\header('Location: https://docs.google.com/viewer?url=' . $_SERVER['HTTP_REFERER'] . '?download-file/' . $sHash . '/' . $sAction);
+			\header('Location: https://docs.google.com/viewer?url=' . $_SERVER['HTTP_REFERER'] . $sEntry .'/' . $sHash . '/' . $sAction);
 		}
 	}
 }	
