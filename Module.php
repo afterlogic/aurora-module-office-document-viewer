@@ -76,7 +76,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 			
-			\header('Location: https://docs.google.com/viewer?url=' . $_SERVER['HTTP_REFERER'] . $sEntry .'/' . $sHash . '/' . $sAction);
+			\header('Location: https://docs.google.com/viewer?url=' . $_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction);
 		}
 	}
 }	
