@@ -34,7 +34,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	protected function isOfficeDocument($sFileName = '')
 	{
-		return !!preg_match('/\.(doc|docx|docm|dotm|dotx|xlsx|xlsb|xls|xlsm|pptx|ppsx|ppt|pps|pptm|potm|ppam|potx|ppsm)$/', strtolower(trim($sFileName)));
+		return !!preg_match('/\.(doc|docx|docm|dotm|dotx|xlsx|xlsb|xls|xlsm|pptx|ppsx|ppt|pps|pptm|potm|ppam|potx|ppsm|rtf)$/', strtolower(trim($sFileName)));
 	}	
 	
 	/**
