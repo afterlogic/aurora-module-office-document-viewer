@@ -72,7 +72,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 			
-			\header('Location: ' . $this->sViewerUrl . $_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction);
+			// "https://view.officeapps.live.com/op/view.aspx?src=";
+			// "https://docs.google.com/viewer?embedded=true&url=";
+			
+			$sViewerUrl = $this->getConfig('ViewerUrl');
+			if (!empty($sViewerUrl))
+			{
+				\header('Location: ' . $sViewerUrl . $_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction);
+			}
 		}
 		$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
 		if (isset($sAuthToken))
