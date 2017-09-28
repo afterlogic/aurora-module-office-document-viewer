@@ -2,5 +2,9 @@
     "Disabled": [
 		false,
 		"bool"
+	],
+	"ViewerUrl": [
+		"https://view.officeapps.live.com/op/view.aspx?src=",
+		"string"
 	]
 }

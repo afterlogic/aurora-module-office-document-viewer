@@ -15,6 +15,10 @@ namespace Aurora\Modules\OfficeDocumentViewer;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
+	
+	protected $sViewerUrl = "https://view.officeapps.live.com/op/view.aspx?src=";
+//	protected $sViewerUrl = "https://docs.google.com/viewer?embedded=true&url=";
+	
 	/***** private functions *****/
 	/**
 	 * Initializes module.
@@ -68,7 +72,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 			
-			\header('Location: https://docs.google.com/viewer?embedded=true&url=' . $_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction);
+			\header('Location: ' . $this->sViewerUrl . $_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction);
 		}
 		$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
 		if (isset($sAuthToken))
