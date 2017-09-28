@@ -72,7 +72,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 			
-			// "https://view.officeapps.live.com/op/view.aspx?src=";
+			// "https://view.officeapps.live.com/op/embed.aspx?src=";
 			// "https://docs.google.com/viewer?embedded=true&url=";
 			
 			$sViewerUrl = $this->getConfig('ViewerUrl');
