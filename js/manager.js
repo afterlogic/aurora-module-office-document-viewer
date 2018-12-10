@@ -11,7 +11,8 @@ module.exports = function (oAppData) {
 	{
 		return {
 			start: function () {
-				CAbstractFileModel.addViewExtensions(['doc', 'docx', 'docm', 'dotm', 'dotx', 'xlsx', 'xlsb', 'xls', 'xlsm', 'pptx', 'ppsx', 'ppt', 'pps', 'pptm', 'potm', 'ppam', 'potx', 'ppsm'/*, 'rtf'*/]);
+				var aExtensionsToView = oAppData['%ModuleName%'] ? oAppData['%ModuleName%']['ExtensionsToView'] : [];
+				CAbstractFileModel.addViewExtensions(aExtensionsToView);
 			}
 		};
 	}

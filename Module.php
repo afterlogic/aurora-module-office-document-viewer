@@ -16,11 +16,6 @@ namespace Aurora\Modules\OfficeDocumentViewer;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
-	
-	protected $sViewerUrl = "https://view.officeapps.live.com/op/view.aspx?src=";
-//	protected $sViewerUrl = "https://docs.google.com/viewer?embedded=true&url=";
-	
-	/***** private functions *****/
 	/**
 	 * Initializes module.
 	 * 
@@ -33,13 +28,28 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$this->subscribeEvent('Mail::mail-attachment-entry::before', array($this, 'onBeforeFileViewEntry'));
 	}
 	
+	public function GetSettings()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+
+		return array(
+			'ExtensionsToView' => $this->getExtensionsToView()
+		);
+	}
+	
+	protected function getExtensionsToView()
+	{
+		return $this->getConfig('ExtensionsToView', ['doc', 'docx', 'docm', 'dotm', 'dotx', 'xlsx', 'xlsb', 'xls', 'xlsm', 'pptx', 'ppsx', 'ppt', 'pps', 'pptm', 'potm', 'ppam', 'potx', 'ppsm']);
+	}
+	
 	/**
 	 * @param string $sFileName = ''
 	 * @return bool
 	 */
 	protected function isOfficeDocument($sFileName = '')
 	{
-		return !!preg_match('/\.(doc|docx|docm|dotm|dotx|xlsx|xlsb|xls|xlsm|pptx|ppsx|ppt|pps|pptm|potm|ppam|potx|ppsm|rtf)$/', strtolower(trim($sFileName)));
+		$sExtensions = implode('|', $this->getExtensionsToView());
+		return !!preg_match('/\.(' . $sExtensions . ')$/', strtolower(trim($sFileName)));
 	}	
 	
 	/**
@@ -73,8 +83,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 			
-			// "https://view.officeapps.live.com/op/embed.aspx?src=";
-			// "https://docs.google.com/viewer?embedded=true&url=";
+			// 'https://view.officeapps.live.com/op/view.aspx?src=';
+			// 'https://view.officeapps.live.com/op/embed.aspx?src=';
+			// 'https://docs.google.com/viewer?embedded=true&url=';
 			
 			$sViewerUrl = $this->getConfig('ViewerUrl');
 			if (!empty($sViewerUrl))
