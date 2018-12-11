@@ -39,7 +39,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	protected function getExtensionsToView()
 	{
-		return $this->getConfig('ExtensionsToView', ['doc', 'docx', 'docm', 'dotm', 'dotx', 'xlsx', 'xlsb', 'xls', 'xlsm', 'pptx', 'ppsx', 'ppt', 'pps', 'pptm', 'potm', 'ppam', 'potx', 'ppsm']);
+		return $this->getConfig('ExtensionsToView', ['doc', 'docx', 'docm', 'dotm', 'dotx', 'xlsx', 'xlsb', 'xls', 'xlsm', 'pptx', 'ppsx', 'ppt', 'pps', 'pptm', 'potm', 'ppam', 'potx', 'ppsm', 'odt', 'odx']);
 	}
 	
 	/**

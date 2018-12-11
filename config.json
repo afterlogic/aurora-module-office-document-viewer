@@ -4,7 +4,7 @@
 		"bool"
 	],
     "ExtensionsToView": [
-		["doc", "docx", "docm", "dotm", "dotx", "xlsx", "xlsb", "xls", "xlsm", "pptx", "ppsx", "ppt", "pps", "pptm", "potm", "ppam", "potx", "ppsm"],
+		["doc", "docx", "docm", "dotm", "dotx", "xlsx", "xlsb", "xls", "xlsm", "pptx", "ppsx", "ppt", "pps", "pptm", "potm", "ppam", "potx", "ppsm", "odt", "odx"],
 		"array"
 	],
 	"ViewerUrl": [
