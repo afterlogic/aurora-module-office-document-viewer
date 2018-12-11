@@ -23,9 +23,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init()
 	{
-		$this->subscribeEvent('Files::download-file-entry::before', array($this, 'onBeforeFileViewEntry'));
-		$this->subscribeEvent('Core::file-cache-entry::before', array($this, 'onBeforeFileViewEntry'));
-		$this->subscribeEvent('Mail::mail-attachment-entry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('System::download-file-entry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('System::file-cache-entry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('System::mail-attachment-entry::before', array($this, 'onBeforeFileViewEntry'));
 	}
 	
 	public function GetSettings()
