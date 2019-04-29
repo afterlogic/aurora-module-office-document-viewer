@@ -23,9 +23,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init()
 	{
-		$this->subscribeEvent('System::download-file-entry::before', array($this, 'onBeforeFileViewEntry'));
-		$this->subscribeEvent('System::file-cache-entry::before', array($this, 'onBeforeFileViewEntry'));
-		$this->subscribeEvent('System::mail-attachment-entry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('System::RunEntry::before', array($this, 'onBeforeFileViewEntry'));
 	}
 	
 	public function GetSettings()
@@ -80,47 +78,56 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function onBeforeFileViewEntry(&$aArguments, &$aResult)
 	{
-		$sEntry = (string) \Aurora\System\Application::GetPathItemByIndex(0, '');
-		$sHash = (string) \Aurora\System\Application::GetPathItemByIndex(1, '');
-		$sAction = (string) \Aurora\System\Application::GetPathItemByIndex(2, '');
+		$aEntries = [
+			'download-file',
+			'file-cache',
+			'mail-attachment'
 
-		$aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
-		
-		$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
-		if (empty($sFileName))
+		];
+		if (in_array($aArguments['EntryName'], $aEntries))
 		{
-			$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
-		}
+			$sEntry = (string) \Aurora\System\Router::getItemByIndex(0, '');
+			$sHash = (string) \Aurora\System\Router::getItemByIndex(1, '');
+			$sAction = (string) \Aurora\System\Router::getItemByIndex(2, '');
 
-		if ($this->isOfficeDocument($sFileName) && $sAction === 'view' && !isset($aValues['AuthToken']))
-		{
-			$aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
-				array(
-					'token' => 'auth',
-					'id' => \Aurora\System\Api::getAuthenticatedUserId()
-				),
-				time() + 60 * 5 // 5 min
-			);			
+			$aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
 			
-			$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
-			
-			// 'https://view.officeapps.live.com/op/view.aspx?src=';
-			// 'https://view.officeapps.live.com/op/embed.aspx?src=';
-			// 'https://docs.google.com/viewer?embedded=true&url=';
-			
-			$sViewerUrl = $this->getConfig('ViewerUrl');
-			if (!empty($sViewerUrl))
+			$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
+			if (empty($sFileName))
 			{
-				\header('Location: ' . $sViewerUrl . urlencode($_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction));
+				$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
 			}
+
+			if ($this->isOfficeDocument($sFileName) && $sAction === 'view' && !isset($aValues['AuthToken']))
+			{
+				$aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
+					array(
+						'token' => 'auth',
+						'id' => \Aurora\System\Api::getAuthenticatedUserId()
+					),
+					time() + 60 * 5 // 5 min
+				);			
+				
+				$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
+				
+				// 'https://view.officeapps.live.com/op/view.aspx?src=';
+				// 'https://view.officeapps.live.com/op/embed.aspx?src=';
+				// 'https://docs.google.com/viewer?embedded=true&url=';
+				
+				$sViewerUrl = $this->getConfig('ViewerUrl');
+				if (!empty($sViewerUrl))
+				{
+					\header('Location: ' . $sViewerUrl . urlencode($_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction));
+				}
+			}
+			$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
+			if (isset($sAuthToken))
+			{
+				\Aurora\System\Api::setAuthToken($sAuthToken);
+				\Aurora\System\Api::setUserId(
+					\Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
+				);
+			}			
 		}
-		$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
-		if (isset($sAuthToken))
-		{
-			\Aurora\System\Api::setAuthToken($sAuthToken);
-			\Aurora\System\Api::setUserId(
-				\Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
-			);
-		}			
 	}
 }	
