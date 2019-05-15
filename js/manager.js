@@ -7,7 +7,7 @@ module.exports = function (oAppData) {
 		CAbstractFileModel = require('%PathToCoreWebclientModule%/js/models/CAbstractFileModel.js')
 	;
 	
-	if (App.getUserRole() === Enums.UserRole.NormalUser)
+	if (App.isUserNormalOrTenant())
 	{
 		return {
 			start: function () {
