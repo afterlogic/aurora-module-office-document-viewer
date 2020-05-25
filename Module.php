@@ -18,14 +18,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 {
 	/**
 	 * Initializes module.
-	 * 
+	 *
 	 * @ignore
 	 */
 	public function init()
 	{
 		$this->subscribeEvent('System::RunEntry::before', array($this, 'onBeforeFileViewEntry'));
 	}
-	
+
 	public function GetSettings()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
@@ -34,33 +34,33 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'ExtensionsToView' => $this->getExtensionsToView()
 		);
 	}
-	
+
 	protected function getExtensionsToView()
 	{
 		return $this->getConfig('ExtensionsToView', [
-			'doc', 
-			'docx', 
-			'docm', 
-			'dotm', 
-			'dotx', 
-			'xlsx', 
-			'xlsb', 
-			'xls', 
-			'xlsm', 
-			'pptx', 
-			'ppsx', 
-			'ppt', 
-			'pps', 
-			'pptm', 
-			'potm', 
-			'ppam', 
-			'potx', 
-			'ppsm', 
-			'odt', 
+			'doc',
+			'docx',
+			'docm',
+			'dotm',
+			'dotx',
+			'xlsx',
+			'xlsb',
+			'xls',
+			'xlsm',
+			'pptx',
+			'ppsx',
+			'ppt',
+			'pps',
+			'pptm',
+			'potm',
+			'ppam',
+			'potx',
+			'ppsm',
+			'odt',
 			'odx']
 		);
 	}
-	
+
 	/**
 	 * @param string $sFileName = ''
 	 * @return bool
@@ -69,10 +69,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		$sExtensions = implode('|', $this->getExtensionsToView());
 		return !!preg_match('/\.(' . $sExtensions . ')$/', strtolower(trim($sFileName)));
-	}	
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @param type $aArguments
 	 * @param type $aResult
 	 */
@@ -91,43 +91,50 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$sAction = (string) \Aurora\System\Router::getItemByIndex(2, '');
 
 			$aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
-			
+
 			$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
 			if (empty($sFileName))
 			{
 				$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
 			}
 
-			if ($this->isOfficeDocument($sFileName) && $sAction === 'view' && !isset($aValues['AuthToken']))
+			if ($this->isOfficeDocument($sFileName) && $sAction === 'view')
 			{
-				$aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
-					array(
-						'token' => 'auth',
-						'id' => \Aurora\System\Api::getAuthenticatedUserId()
-					),
-					time() + 60 * 5 // 5 min
-				);			
-				
-				$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
-				
-				// 'https://view.officeapps.live.com/op/view.aspx?src=';
-				// 'https://view.officeapps.live.com/op/embed.aspx?src=';
-				// 'https://docs.google.com/viewer?embedded=true&url=';
-				
-				$sViewerUrl = $this->getConfig('ViewerUrl');
-				if (!empty($sViewerUrl))
+				if (!isset($aValues['AuthToken']))
 				{
-					\header('Location: ' . $sViewerUrl . urlencode($_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction));
+					$aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
+						array(
+							'token' => 'auth',
+							'id' => \Aurora\System\Api::getAuthenticatedUserId()
+						),
+						time(),
+						time() + 60 * 5 // 5 min
+					);
+
+					$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
+
+					// 'https://view.officeapps.live.com/op/view.aspx?src=';
+					// 'https://view.officeapps.live.com/op/embed.aspx?src=';
+					// 'https://docs.google.com/viewer?embedded=true&url=';
+
+					$sViewerUrl = $this->getConfig('ViewerUrl');
+					if (!empty($sViewerUrl))
+					{
+						\header('Location: ' . $sViewerUrl . urlencode($_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction));
+					}
+				}
+				else
+				{
+					$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
+					if (isset($sAuthToken))
+					{
+						\Aurora\System\Api::setAuthToken($sAuthToken);
+						\Aurora\System\Api::setUserId(
+							\Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
+						);
+					}
 				}
 			}
-			$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
-			if (isset($sAuthToken))
-			{
-				\Aurora\System\Api::setAuthToken($sAuthToken);
-				\Aurora\System\Api::setUserId(
-					\Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
-				);
-			}			
 		}
 	}
-}	
+}
