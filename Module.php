@@ -24,6 +24,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function init()
 	{
 		$this->subscribeEvent('System::RunEntry::before', array($this, 'onBeforeFileViewEntry'));
+		$this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 10);
 	}
 
 	public function GetSettings()
@@ -135,6 +136,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 					}
 				}
 			}
+		}
+	}
+
+	/**
+	 *
+	 * @param type $aArguments
+	 * @param type $aResult
+	 */
+	public function onGetFile(&$aArguments, &$aResult)
+	{
+		if ($this->isOfficeDocument($aArguments['Name']))
+		{
+			$aArguments['NoRedirect'] = true;
 		}
 	}
 }
