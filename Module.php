@@ -92,10 +92,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 			$aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
 
-			$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
+			$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
 			if (empty($sFileName))
 			{
-				$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
+				$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
 			}
 
 			if ($this->isOfficeDocument($sFileName) && $sAction === 'view')
