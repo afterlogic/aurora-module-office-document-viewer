@@ -18,7 +18,7 @@ module.exports = function (oAppData) {
 				App.subscribeEvent('AbstractFileModel::FileView::before', function (oParams) {
 					if (oParams['sUrl'])
 					{
-						oParams['sUrl'] += '/' + moment().unix() ;
+						oParams['sUrl'] += '&' + moment().unix() ;
 					}
 				});
 			}
