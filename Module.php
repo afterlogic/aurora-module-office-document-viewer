@@ -121,7 +121,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 					$sViewerUrl = $this->getConfig('ViewerUrl');
 					if (!empty($sViewerUrl))
 					{
-						\header('Location: ' . $sViewerUrl . urlencode($_SERVER['HTTP_REFERER'] . '?' . $sEntry .'/' . $sHash . '/' . $sAction . '/' . time()));
+						if (isset($_SERVER['HTTP_REFERER']))
+						{
+							$sHost = $_SERVER['HTTP_REFERER'];
+						}
+						else
+						{
+							$sHost = $_SERVER['HTTP_HOST'];
+						}
+						\header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry .'/' . $sHash . '/' . $sAction . '/' . time()));
 					}
 				}
 				else
