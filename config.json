@@ -1,55 +1,55 @@
 {
-  "Disabled": [
-    false,
-    "bool"
-  ],
-  "Disabled_Description": [
-    "",
-    "string"
-  ],
-  "IncludeInMobile": [
-    true,
-    "bool"
-  ],
-  "IncludeInMobile_Description": [
-    "",
-    "string"
-  ],
-  "ExtensionsToView": [
-    [
-      "doc",
-      "docx",
-      "docm",
-      "dotm",
-      "dotx",
-      "xlsx",
-      "xlsb",
-      "xls",
-      "xlsm",
-      "pptx",
-      "ppsx",
-      "ppt",
-      "pps",
-      "pptm",
-      "potm",
-      "ppam",
-      "potx",
-      "ppsm",
-      "odt",
-      "odx"
-    ],
-    "array"
-  ],
-  "ExtensionsToView_Description": [
-    "",
-    "string"
-  ],
-  "ViewerUrl": [
-    "https://view.officeapps.live.com/op/view.aspx?src=",
-    "string"
-  ],
-  "ViewerUrl_Description": [
-    "",
-    "string"
-  ]
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"Disabled_Description": [
+		"",
+		"string"
+	],
+	"IncludeInMobile": [
+		true,
+		"bool"
+	],
+	"IncludeInMobile_Description": [
+		"",
+		"string"
+	],
+	"ExtensionsToView": [
+		[
+			"doc",
+			"docx",
+			"docm",
+			"dotm",
+			"dotx",
+			"xlsx",
+			"xlsb",
+			"xls",
+			"xlsm",
+			"pptx",
+			"ppsx",
+			"ppt",
+			"pps",
+			"pptm",
+			"potm",
+			"ppam",
+			"potx",
+			"ppsm",
+			"odt",
+			"odx"
+		],
+		"array"
+	],
+	"ExtensionsToView_Description": [
+		"",
+		"string"
+	],
+	"ViewerUrl": [
+		"https://view.officeapps.live.com/op/view.aspx?src=",
+		"string"
+	],
+	"ViewerUrl_Description": [
+		"",
+		"string"
+	]
 }
