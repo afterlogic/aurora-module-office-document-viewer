@@ -16,147 +16,137 @@ namespace Aurora\Modules\OfficeDocumentViewer;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
-	/**
-	 * Initializes module.
-	 *
-	 * @ignore
-	 */
-	public function init()
-	{
-		$this->subscribeEvent('System::RunEntry::before', array($this, 'onBeforeFileViewEntry'), 5);
-		$this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 10);
-	}
+    /**
+     * Initializes module.
+     *
+     * @ignore
+     */
+    public function init()
+    {
+        $this->subscribeEvent('System::RunEntry::before', array($this, 'onBeforeFileViewEntry'), 5);
+        $this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 10);
+    }
 
-	public function GetSettings()
-	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+    public function GetSettings()
+    {
+        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 
-		return array(
-			'ExtensionsToView' => $this->getExtensionsToView()
-		);
-	}
+        return array(
+            'ExtensionsToView' => $this->getExtensionsToView()
+        );
+    }
 
-	protected function getExtensionsToView()
-	{
-		return $this->getConfig('ExtensionsToView', [
-			'doc',
-			'docx',
-			'docm',
-			'dotm',
-			'dotx',
-			'xlsx',
-			'xlsb',
-			'xls',
-			'xlsm',
-			'pptx',
-			'ppsx',
-			'ppt',
-			'pps',
-			'pptm',
-			'potm',
-			'ppam',
-			'potx',
-			'ppsm',
-			'odt',
-			'odx']
-		);
-	}
+    protected function getExtensionsToView()
+    {
+        return $this->getConfig(
+            'ExtensionsToView',
+            [
+            'doc',
+            'docx',
+            'docm',
+            'dotm',
+            'dotx',
+            'xlsx',
+            'xlsb',
+            'xls',
+            'xlsm',
+            'pptx',
+            'ppsx',
+            'ppt',
+            'pps',
+            'pptm',
+            'potm',
+            'ppam',
+            'potx',
+            'ppsm',
+            'odt',
+            'odx']
+        );
+    }
 
-	/**
-	 * @param string $sFileName = ''
-	 * @return bool
-	 */
-	protected function isOfficeDocument($sFileName = '')
-	{
-		$sExtensions = implode('|', $this->getExtensionsToView());
-		return !!preg_match('/\.(' . $sExtensions . ')$/', strtolower(trim($sFileName)));
-	}
+    /**
+     * @param string $sFileName = ''
+     * @return bool
+     */
+    protected function isOfficeDocument($sFileName = '')
+    {
+        $sExtensions = implode('|', $this->getExtensionsToView());
+        return !!preg_match('/\.(' . $sExtensions . ')$/', strtolower(trim($sFileName)));
+    }
 
-	/**
-	 *
-	 * @param type $aArguments
-	 * @param type $aResult
-	 */
-	public function onBeforeFileViewEntry(&$aArguments, &$aResult)
-	{
-		$aEntries = [
-			'download-file',
-			'file-cache',
-			'mail-attachment'
+    /**
+     *
+     * @param type $aArguments
+     * @param type $aResult
+     */
+    public function onBeforeFileViewEntry(&$aArguments, &$aResult)
+    {
+        $aEntries = [
+            'download-file',
+            'file-cache',
+            'mail-attachment'
 
-		];
-		if (in_array($aArguments['EntryName'], $aEntries))
-		{
-			$sEntry = (string) \Aurora\System\Router::getItemByIndex(0, '');
-			$sHash = (string) \Aurora\System\Router::getItemByIndex(1, '');
-			$sAction = (string) \Aurora\System\Router::getItemByIndex(2, '');
+        ];
+        if (in_array($aArguments['EntryName'], $aEntries)) {
+            $sEntry = (string) \Aurora\System\Router::getItemByIndex(0, '');
+            $sHash = (string) \Aurora\System\Router::getItemByIndex(1, '');
+            $sAction = (string) \Aurora\System\Router::getItemByIndex(2, '');
 
-			$aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
+            $aValues = \Aurora\System\Api::DecodeKeyValues($sHash);
 
-			$sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
-			if (empty($sFileName))
-			{
-				$sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
-			}
+            $sFileName = isset($aValues['FileName']) ? urldecode($aValues['FileName']) : '';
+            if (empty($sFileName)) {
+                $sFileName = isset($aValues['Name']) ? urldecode($aValues['Name']) : '';
+            }
 
-			if ($this->isOfficeDocument($sFileName) && $sAction === 'view')
-			{
-				if (!isset($aValues['AuthToken']))
-				{
-					$aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
-						array(
-							'token' => 'auth',
-							'id' => \Aurora\System\Api::getAuthenticatedUserId()
-						),
-						time(),
-						time() + 60 * 5 // 5 min
-					);
+            if ($this->isOfficeDocument($sFileName) && $sAction === 'view') {
+                if (!isset($aValues['AuthToken'])) {
+                    $aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
+                        array(
+                            'token' => 'auth',
+                            'id' => \Aurora\System\Api::getAuthenticatedUserId()
+                        ),
+                        time(),
+                        time() + 60 * 5 // 5 min
+                    );
 
-					$sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
+                    $sHash = \Aurora\System\Api::EncodeKeyValues($aValues);
 
-					// 'https://view.officeapps.live.com/op/view.aspx?src=';
-					// 'https://view.officeapps.live.com/op/embed.aspx?src=';
-					// 'https://docs.google.com/viewer?embedded=true&url=';
+                    // 'https://view.officeapps.live.com/op/view.aspx?src=';
+                    // 'https://view.officeapps.live.com/op/embed.aspx?src=';
+                    // 'https://docs.google.com/viewer?embedded=true&url=';
 
-					$sViewerUrl = $this->getConfig('ViewerUrl');
-					if (!empty($sViewerUrl))
-					{
-						if (isset($_SERVER['HTTP_REFERER']))
-						{
-							$sHost = $_SERVER['HTTP_REFERER'];
-						}
-						else
-						{
-							$sHost = $_SERVER['HTTP_HOST'];
-						}
-						\header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry .'/' . $sHash . '/' . $sAction . '/' . time()));
-					}
-				}
-				else
-				{
-					$sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
-					if (isset($sAuthToken))
-					{
-						\Aurora\System\Api::setAuthToken($sAuthToken);
-						\Aurora\System\Api::setUserId(
-							\Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
-						);
-					}
-				}
-			}
-		}
-	}
+                    $sViewerUrl = $this->getConfig('ViewerUrl');
+                    if (!empty($sViewerUrl)) {
+                        if (isset($_SERVER['HTTP_REFERER'])) {
+                            $sHost = $_SERVER['HTTP_REFERER'];
+                        } else {
+                            $sHost = $_SERVER['HTTP_HOST'];
+                        }
+                        \header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry .'/' . $sHash . '/' . $sAction . '/' . time()));
+                    }
+                } else {
+                    $sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
+                    if (isset($sAuthToken)) {
+                        \Aurora\System\Api::setAuthToken($sAuthToken);
+                        \Aurora\System\Api::setUserId(
+                            \Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
+                        );
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 *
-	 * @param type $aArguments
-	 * @param type $aResult
-	 */
-	public function onGetFile(&$aArguments, &$aResult)
-	{
-		if ($this->isOfficeDocument($aArguments['Name']))
-		{
-			$aArguments['NoRedirect'] = true;
-		}
-	}
+    /**
+     *
+     * @param type $aArguments
+     * @param type $aResult
+     */
+    public function onGetFile(&$aArguments, &$aResult)
+    {
+        if ($this->isOfficeDocument($aArguments['Name'])) {
+            $aArguments['NoRedirect'] = true;
+        }
+    }
 }
