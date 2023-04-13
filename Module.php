@@ -76,8 +76,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     /**
      *
-     * @param type $aArguments
-     * @param type $aResult
+     * @param array $aArguments
+     * @param array $aResult
      */
     public function onBeforeFileViewEntry(&$aArguments, &$aResult)
     {
@@ -127,7 +127,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                     }
                 } else {
                     $sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
-                    if (isset($sAuthToken)) {
+                    if ($sAuthToken) {
                         \Aurora\System\Api::setAuthToken($sAuthToken);
                         \Aurora\System\Api::setUserId(
                             \Aurora\System\Api::getAuthenticatedUserId($sAuthToken)
@@ -140,8 +140,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     /**
      *
-     * @param type $aArguments
-     * @param type $aResult
+     * @param array $aArguments
+     * @param array $aResult
      */
     public function onGetFile(&$aArguments, &$aResult)
     {
