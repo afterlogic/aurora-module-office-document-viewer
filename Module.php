@@ -27,6 +27,15 @@ class Module extends \Aurora\System\Module\AbstractModule
         $this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 10);
     }
 
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
+    }
+
     public function GetSettings()
     {
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
