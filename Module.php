@@ -12,6 +12,8 @@ namespace Aurora\Modules\OfficeDocumentViewer;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
+ * @property Settings $oModuleSettings
+ *
  * @package Modules
  */
 class Module extends \Aurora\System\Module\AbstractModule
@@ -50,35 +52,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 
         return array(
-            'ExtensionsToView' => $this->getExtensionsToView()
-        );
-    }
-
-    protected function getExtensionsToView()
-    {
-        return $this->getConfig(
-            'ExtensionsToView',
-            [
-            'doc',
-            'docx',
-            'docm',
-            'dotm',
-            'dotx',
-            'xlsx',
-            'xlsb',
-            'xls',
-            'xlsm',
-            'pptx',
-            'ppsx',
-            'ppt',
-            'pps',
-            'pptm',
-            'potm',
-            'ppam',
-            'potx',
-            'ppsm',
-            'odt',
-            'odx']
+            'ExtensionsToView' => $this->oModuleSettings->ExtensionsToView
         );
     }
 
@@ -88,7 +62,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     protected function isOfficeDocument($sFileName = '')
     {
-        $sExtensions = implode('|', $this->getExtensionsToView());
+        $sExtensions = implode('|', $this->oModuleSettings->ExtensionsToView);
         return !!preg_match('/\.(' . $sExtensions . ')$/', strtolower(trim($sFileName)));
     }
 
@@ -134,7 +108,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                     // 'https://view.officeapps.live.com/op/embed.aspx?src=';
                     // 'https://docs.google.com/viewer?embedded=true&url=';
 
-                    $sViewerUrl = $this->getConfig('ViewerUrl');
+                    $sViewerUrl = $this->oModuleSettings->ViewerUrl;
                     if (!empty($sViewerUrl)) {
                         if (isset($_SERVER['HTTP_REFERER'])) {
                             $sHost = $_SERVER['HTTP_REFERER'];
