@@ -121,7 +121,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                         } else {
                             $sHost = $_SERVER['HTTP_HOST'];
                         }
-                        \header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry .'/' . $sHash . '/' . $sAction . '/' . time()));
+                        \header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry . '/' . $sHash . '/' . $sAction . '/' . time()));
                     }
                 } else {
                     $sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
