@@ -98,8 +98,8 @@ class Module extends \Aurora\System\Module\AbstractModule
             }
 
             if ($this->isOfficeDocument($sFileName) && $sAction === 'view') {
-                if (!isset($aValues['AuthToken'])) {
-                    $aValues['AuthToken'] = \Aurora\System\Api::UserSession()->Set(
+                if (!isset($aValues[\Aurora\System\Application::AUTH_TOKEN_KEY])) {
+                    $aValues[\Aurora\System\Application::AUTH_TOKEN_KEY] = \Aurora\System\Api::UserSession()->Set(
                         array(
                             'token' => 'auth',
                             'id' => \Aurora\System\Api::getAuthenticatedUserId()
@@ -124,7 +124,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                         \header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry . '/' . $sHash . '/' . $sAction . '/' . time()));
                     }
                 } else {
-                    $sAuthToken = isset($aValues['AuthToken']) ? $aValues['AuthToken'] : null;
+                    $sAuthToken = $aValues[\Aurora\System\Application::AUTH_TOKEN_KEY] ?? null;
                     if ($sAuthToken) {
                         \Aurora\System\Api::setAuthToken($sAuthToken);
                         \Aurora\System\Api::setUserId(
