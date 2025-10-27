@@ -116,12 +116,25 @@ class Module extends \Aurora\System\Module\AbstractModule
 
                     $sViewerUrl = $this->oModuleSettings->ViewerUrl;
                     if (!empty($sViewerUrl)) {
+                        $sUrl = '';
                         if (isset($_SERVER['HTTP_REFERER'])) {
-                            $sHost = $_SERVER['HTTP_REFERER'];
+                            $sUrl = $_SERVER['HTTP_REFERER'];
                         } else {
-                            $sHost = $_SERVER['HTTP_HOST'];
+                            $sUrl = $_SERVER['HTTP_HOST'];
                         }
-                        \header('Location: ' . $sViewerUrl . urlencode($sHost . '?' . $sEntry . '/' . $sHash . '/' . $sAction . '/' . time()));
+                        $parts = parse_url($sUrl);
+
+                        if (!empty($parts['scheme']) && !empty($parts['host'])) {
+                            $sUrl = $parts['scheme'] . '://' . $parts['host'];
+                        } elseif (!empty($parts['host'])) {
+                            $sUrl = 'https://' . $parts['host'];
+                        } else {
+                            $sUrl = 'https://' . $sUrl;
+                        }
+                        if (!empty($parts['path'])) {
+                            $sUrl .= rtrim($parts['path'], '/');
+                        }
+                        \header('Location: ' . $sViewerUrl . urlencode($sUrl . '?' . $sEntry . '/' . $sHash . '/' . $sAction . '/' . time()));
                     }
                 } else {
                     $sAuthToken = $aValues[\Aurora\System\Application::AUTH_TOKEN_KEY] ?? null;
